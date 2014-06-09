@@ -55,7 +55,6 @@ public class MessageManager {
 			SMSSender sender = new SMSSender();
 			sender.sendSMSWithResponseAddress(createdSMS, responseAddress);
 			}
-			else LogWriter.getInstance().log("Mail z adresatem spoza obecnej ksiazki: "+createdSMS.getRecipient());
-		}
+		} else LogWriter.getInstance().log("Mail z adresatem spoza obecnej ksiazki: "+createdSMS.getRecipient());
 	}
 }
