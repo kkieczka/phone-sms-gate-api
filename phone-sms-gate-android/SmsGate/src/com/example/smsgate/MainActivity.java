@@ -7,6 +7,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ScrollView;
+import android.widget.TextView;
+
 
 public class MainActivity extends Activity {
 
@@ -27,10 +30,13 @@ public class MainActivity extends Activity {
         	bStop.setEnabled(false);
         	bRun.setEnabled(true);
         }
+        
+        LogWriter.getInstance().init((TextView)findViewById(R.id.textView1), (ScrollView)findViewById(R.id.scrollView1));
+        
     }
 
 
-    @Override
+	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);

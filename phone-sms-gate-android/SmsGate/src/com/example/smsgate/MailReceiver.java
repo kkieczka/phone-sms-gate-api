@@ -80,6 +80,7 @@ public class MailReceiver extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.d(TAG, "MailReceiver service started");
+		LogWriter.getInstance().log("Usluga uruchomiona");
 		setRunning(true);
 		
 		new Thread() {
@@ -89,19 +90,19 @@ public class MailReceiver extends Service {
 					Session session = Session.getInstance(props);
 					Store store = session.getStore("imaps");
 						
-						Log.i(TAG, "Lacze...");
+						LogWriter.getInstance().log("Lacze...");
 						store.connect(serv_addr, serv_port, serv_login, serv_pass);
-						Log.i(TAG, "Polaczony");
+						LogWriter.getInstance().log("Polaczony");
 						
 						folder = store.getFolder("INBOX");
 						if (folder == null || !folder.exists()) {
-							Log.e(TAG, "Folder nie istnieje na serwerze! Koncze usluge");
+							LogWriter.getInstance().log("Folder nie istnieje na serwerze! Koncze usluge");
 							setRunning(false);
 							return;
 						}
 						
 						folder.open(Folder.READ_WRITE); // WRITE to set SEEN flags
-						Log.i(TAG, "Folder otwarty, nasluchuje nowych wiadomosci");
+						LogWriter.getInstance().log("Folder otwarty, nasluchuje nowych wiadomosci");
 						msgListener = new MsgCountListener();
 					    folder.addMessageCountListener(msgListener);
 						
@@ -125,6 +126,7 @@ public class MailReceiver extends Service {
 					    	throw fex;
 					    } catch (MessagingException mex) {
 					    	supportsIdle = false;
+					    	LogWriter.getInstance().log("Serwer nie wspiera IDLE");
 					    	Log.d(TAG, "IMAP IDLE not supported by server");
 					    }
 					    while(isRunning()) {
@@ -143,11 +145,11 @@ public class MailReceiver extends Service {
 					    }
 					    
 				} catch (NoSuchProviderException e) {
-					Log.e(TAG, "Problem z polaczeniem do serwera. Sprawdz ustawienia polaczenia");
+					LogWriter.getInstance().log("Problem z polaczeniem do serwera. Sprawdz ustawienia polaczenia");
 				} catch (AuthenticationFailedException e) {
-					Log.e(TAG, "Nieudane logowanie. Sprawdz login i haslo");
+					LogWriter.getInstance().log("Nieudane logowanie. Sprawdz login i haslo");
 				} catch (MessagingException e) {
-					Log.e(TAG, "Nieznany problem podczas polaczenia: " + e.getMessage());
+					LogWriter.getInstance().log("Nieznany problem podczas polaczenia: " + e.getMessage());
 				} catch (InterruptedException e) {
 					Log.d(TAG, "Thread sleep interrupted");
 				}
@@ -165,12 +167,13 @@ public class MailReceiver extends Service {
 					try {
 						folder.close(false);
 					} catch (MessagingException e) {
-						Log.e(TAG, "Problem podczas zatrzymywania uslugi: " + e.getMessage());
+						LogWriter.getInstance().log("Problem podczas zatrzymywania uslugi: " + e.getMessage());
 					}
 				}
 			}
 		}.start();
 		setRunning(false);
+		LogWriter.getInstance().log("Usluga zatrzymana");
 		Log.d(TAG, "MailReceiver service destroyed");
 	}
 	
@@ -191,7 +194,7 @@ class MsgCountListener extends MessageCountAdapter
 	
 	public void messagesAdded(MessageCountEvent ev) {
 	    Message[] msgs = ev.getMessages();
-	    Log.i(MailReceiver.TAG,"Nowych wiadomosci: "+msgs.length);
+	    LogWriter.getInstance().log("Nowych wiadomosci: "+msgs.length);
 	    messageManager.sendMessagesAsSMS(msgs);
 	    
 	}

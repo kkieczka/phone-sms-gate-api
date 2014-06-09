@@ -29,6 +29,7 @@ public class SMSSender {
 	
 		SmsManager smsManager = SmsManager.getDefault();
 		smsManager.sendTextMessage(sms.getRecipient(), null, sms.getBody(), null, null);
+		LogWriter.getInstance().log("Wyslano sms do " + sms.getRecipient());
 	}
 	
 }
